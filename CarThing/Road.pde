@@ -8,58 +8,47 @@ class Road {
   float xVertex[];
   float yVertex[];
   ArrayList<Coord> waypoints;
-  Road(float xStart, float yStart, float xFinish, float yFinish, int segm) {
-    this.xStart = xStart;
-    this.yStart = yStart;
-    this.xFinish = xFinish;
-    this.yFinish = yFinish;
-    vertex = segm;
-    vertex +=2;
-    while (vertex % 4 != 0) {
-      vertex ++;
-    }
-    
-    xVertex = new float [vertex];
-    yVertex = new float [vertex];
-    createRoad(vertex);
+  ArrayList<Node> segments;
+  Road(ArrayList<Node> segments) {
+
+    this.segments=segments;
+    vertex = segments.size();
+
+
+    createRoad();
     waypoints = getWaypoints();
   }
 
 
-  void createRoad(int vertex) {
+  void createRoad() {
+    vertex = vertex +2;
+    xVertex = new float [vertex];
+    yVertex = new float [vertex];
+    
+    xVertex[0] = segments.get(0).x-50;
+    yVertex[0] = segments.get(0).y;
+    xVertex[xVertex.length-1] = segments.get(segments.size()-1).x+50;
+    yVertex[yVertex.length-1] = segments.get(segments.size()-1).y;
+    for (int i = 0; i < segments.size(); i++) {
+      xVertex[i+1] = segments.get(i).x;
+      yVertex[i+1] = segments.get(i).y;
+    }
 
-    float xGap = (xFinish-xStart)/(vertex-2);
-    float yGap = (yFinish-yStart)/(vertex-2);
-    xVertex[0] =xStart;
-    yVertex[0] = yStart;
-    xVertex[1] =xStart;
-    yVertex[1] = yStart;
-
-    xVertex[vertex-1] = xFinish; 
-    yVertex[vertex-1] = yFinish; 
-    xVertex[vertex-2] = xFinish; 
-    yVertex[vertex-2] = yFinish;
   }
 
-  void draw(int vertex) {
+  void draw() {
     strokeWeight(60);
     stroke(100);
     beginShape();
     noFill();
-
     curveVertex(xStart, yStart);
     for (int i = 0; i < vertex; i++) {
       curveVertex(xVertex[i], yVertex[i]);
     }
     curveVertex(xFinish, yFinish);
-
-
     endShape();
     strokeWeight(1);
     stroke(0);
-    for (int i = 0; i < vertex; i++) {
-     
-    }
   }
 
   ArrayList<Coord> getWaypoints() {
@@ -101,13 +90,13 @@ class Road {
     float lastX = waypoints.get(0).x;
     float lastY = waypoints.get(0).y;
     ArrayList<Coord> temp = new ArrayList<Coord>();
-    temp.add(new Coord(lastX,lastY));
+    temp.add(new Coord(lastX, lastY));
     for (int i = 0; i < waypoints.size(); i++) {
 
       if (dist(lastX, lastY, waypoints.get(i).x, waypoints.get(i).y)>=dist) {
         fill(255, 0, 0);
         temp.add(new Coord(waypoints.get(i).x, waypoints.get(i).y));
-        
+
 
         lastX = waypoints.get(i).x;
         lastY = waypoints.get(i).y;
